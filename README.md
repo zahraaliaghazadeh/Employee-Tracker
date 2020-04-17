@@ -17,7 +17,7 @@ This project has to run with terminal. The user will have to answer the prompts 
 
 ## Screenshots
 
-![gif](images/gif2.gif)
+![gif](Assets/gif2.gif)
 
 ## Technologies
 
