@@ -26,14 +26,14 @@ connection.connect(function (err) {
     // start();
 });
 
-inputArr = [
+inquirer.prompt(
 
     {
         type: "list",
         message: "Select one option below",
         name: "action",
         // the * labeled ones are the minimum requirement
-        choices: ["*view All Employees", "view All Employees By Department", "view All Employees By Manager", "*Add Employee", "Remove Employee", "*Update Employee Role", "Update Employee Manager", "*view All Roles", "*Add department", "*Add role", "*view All departments"]
+        choices: ["*view All Employees", "view All Employees By Department", "view All Employees By Manager", "*Add Employee", "Remove Employee", "*Update Employee Role", "Update Employee Manager", "*view All Roles", "*Add department", "*Add role", "*view All departments","View the total utilized budget of a department"]
     },
 
     {
@@ -57,7 +57,7 @@ inputArr = [
         message: "Enter the Employee name",
         name: "employee",
         when: (response) => response.action === '*Add Employee'
-
+        
     },
     {
         // view department
@@ -81,4 +81,34 @@ inputArr = [
 
     }
 
-]
+    // calling different functions based on the answer chosen
+).then(function(answer){
+
+    if(answer.action === "*Add department"){
+        adddepartment();
+    }
+    else if(answer.action === "*Add role"){
+        addrole();
+    }
+    else if(answer.action === "*Add Employee"){
+        addemployee();
+    }
+    else if(answer.action === "*view All departments"){
+        viewalldepartments();
+    }
+    else if(answer.action === "*view All Roles"){
+        viewallroles();
+    }
+    else if(answer.action === "*view All Employees"){
+        viewallemployees();
+    }
+    else if(answer.action === "*Update Employee Role"){
+        updateemployeerole();
+    }else{
+        connection.end();
+      }
+
+})
+
+
+
