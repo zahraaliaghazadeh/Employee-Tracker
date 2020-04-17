@@ -14,7 +14,7 @@ CREATE TABLE employee (
 --   FOREIGN KEY (roleid),
   roleid INT NOT NULL REFERENCES role(id),
 --   I am trying to say here that two or more employees can have one manager to report to
-  managerid INT NOT NULL REFERENCES employee(id),
+  managerid INT NULL REFERENCES employee(id),
   PRIMARY KEY (id)
 );
 
