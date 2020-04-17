@@ -206,16 +206,17 @@ function addEmployee() {
 function viewAllDepartments() {
     inquirer
         .prompt({
-            type: "input",
-            message: "Enter the Department",
-            name: "department",
+            type: "confirm",
+            message: "You are trying to view all departments",
+            name: "viewalldept",
+            default: true
         })
-        .then(function (answer) {
+        .then(function () {
 
-            var query = "SELECT FROM * department ";
+            var query = "SELECT * FROM department ";
 
-            connection.query(query, function (err, res) {
-
+            connection.query(query, function (err, data) {
+                console.table(data);
                 runSearch();
             });
         });
@@ -223,16 +224,17 @@ function viewAllDepartments() {
 function viewAllRoles() {
     inquirer
         .prompt({
-            type: "input",
-            message: "Enter the Department",
-            name: "department",
+            type: "confirm",
+            message: "You are trying to view all employees",
+            name: "viewallroles",
+            default: true
         })
         .then(function (answer) {
 
-            var query = "SELECT FROM * role ";
+            var query = "SELECT * FROM role ";
 
-            connection.query(query, function (err, res) {
-
+            connection.query(query, function (err, data) {
+                console.table(data);
                 runSearch();
             });
         });
@@ -247,10 +249,10 @@ function viewAllEmployees() {
         })
         .then(function (answer) {
 
-            var query = "SELECT FROM employee";
+            var query = "SELECT * FROM employee";
 
-            connection.query(query, function (err, res) {
-                console.table(res);
+            connection.query(query, function (err, data) {
+                console.table(data);
                 runSearch();
 
             });
