@@ -55,26 +55,26 @@ function runSearch() {
             // calling different functions based on the answer chosen
 
             if (answer.action === "*Add department") {
-                adddepartment();
+                addDepartment();
             }
             else if (answer.action === "*Add role") {
-                addrole();
+                addRole();
             }
             else if (answer.action === "*Add Employee") {
-                addemployee();
+                addEmployee();
             }
             else if (answer.action === "*view All departments") {
-                viewalldepartments();
+                viewAllDepartments();
             }
             else if (answer.action === "*view All Roles") {
-                viewallroles();
+                viewAllRoles();
             }
             else if (answer.action === "*view All Employees") {
-                viewallemployees();
+                viewAllEmployees();
             }
             else if (answer.action === "*Update Employee Role") {
-                updateemployeerole();
-            } 
+                updateEmployeeRole();
+            }
             else if (answer.action === "*Exit") {
                 console.log("End!");
                 connection.end();
@@ -130,60 +130,80 @@ function runSearch() {
 //     // }
 // ]
 
-
-function adddepartment(newdep) {
+// add functions
+function addDepartment() {
     inquirer
         .prompt({
             type: "input",
             message: "Enter the Department",
             name: "department",
         })
-        .then(function (answer) {
+        .then(function (newDept) {
 
             var query = "INSERT INTO departments";
+            connection.query(query, { name: newDept.name }, function (err, data) {
+                connection.query("SELECT * FROM department", function (err, data) {
 
-            connection.query(query,{name}, function (err, res) {
-
+                    console.table(data);
+                })
                 runSearch();
             });
         });
 }
-
-function addrole() {
+function addRole() {
     inquirer
-        .prompt({
+        .prompt([{
             type: "input",
-            message: "Enter the role",
-            name: "role"
-        })
-        .then(function (answer) {
+            message: "Enter the Role",
+            name: "role",
+        },
+        {
+            type: "input",
+            message: "Enter the salary",
+            name: "salary"
+        }
 
-            var query = "INSERT INTO department ?";
+        ])
+        .then(function (newRole) {
 
-            connection.query(query, function (err, res) {
+            var query = "INSERT INTO role";
+            connection.query(query, { name: newRole.title, salary: newRole.salary }, function (err, data) {
+                connection.query("SELECT * FROM role", function (err, data) {
 
+                    console.table(data);
+                })
                 runSearch();
             });
         });
 }
-function addemployee() {
+function addEmployee() {
     inquirer
-        .prompt({
+        .prompt([{
             type: "input",
-            message: "Enter the Employee name",
-            name: "employee"
-        })
-        .then(function (answer) {
+            message: "Enter the Employee first name",
+            name: "employeeFN",
+        },
+        {
+            type: "input",
+            message: "Enter the Employee last name",
+            name: "employeeLN",
+        }
+        ])
+        .then(function (newEmpl) {
 
-            var query = "INSERT INTO department ?";
+            var query = "INSERT INTO employee";
+            connection.query(query, { firstname: newEmpl.employeeFN ,lastname: newEmpl.employeeLN }, function (err, data) {
+                connection.query("SELECT * FROM employee", function (err, data) {
 
-            connection.query(query, function (err, res) {
-
+                    console.table(data);
+                })
                 runSearch();
             });
         });
 }
-function viewalldepartments() {
+
+// view all functions
+function viewAllDepartments() {
     inquirer
         .prompt({
             type: "input",
@@ -200,7 +220,7 @@ function viewalldepartments() {
             });
         });
 }
-function viewallroles() {
+function viewAllRoles() {
     inquirer
         .prompt({
             type: "input",
@@ -217,7 +237,7 @@ function viewallroles() {
             });
         });
 }
-function viewallemployees() {
+function viewAllEmployees() {
     inquirer
         .prompt({
             type: "confirm",
@@ -228,7 +248,7 @@ function viewallemployees() {
         .then(function (answer) {
 
             var query = "SELECT FROM employee";
-            
+
             connection.query(query, function (err, res) {
                 console.table(res);
                 runSearch();
@@ -237,7 +257,8 @@ function viewallemployees() {
         });
 }
 
-function updateemployeerole() {
+// update functions
+function updateEmployeeRole() {
     inquirer
         .prompt({
             type: "input",
