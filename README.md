@@ -35,12 +35,13 @@ After installations, Once you download the files, You can open the terminal and 
 
 ## Features
 * Feature 1: You can view the table of department, role and employee.
-* Feature 2: 
+* Feature 2: You can add role , add department and add employee.
+* Feature 3: You can update employee role.
+
 
 
 To-do list:
-* Fix the bug for adding and updating.
-* Fix the foreign key problems.
+
 
 * Improvement to be done : This application can be furthur improved by using the join methods on tables and the rest of the non starred options in the choices in terminal.
 
