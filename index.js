@@ -218,7 +218,7 @@ function viewAllDepartments() {
             var query = "SELECT * FROM department ";
 
             connection.query(query, function (err, data) {
-                console.log(data);
+                console.table(data);
                 runSearch();
             });
         });
@@ -236,69 +236,83 @@ function viewAllRoles() {
             var query = "SELECT * FROM role ";
 
             connection.query(query, function (err, data) {
-                console.log(data);
+                console.table(data);
                 runSearch();
             });
         });
 }
+
 function viewAllEmployees() {
     inquirer
         .prompt({
             type: "confirm",
-            message: "You are trying to view all employees",
+            message: "You are trying to view all employees?",
             name: "viewallempl",
             default: true
         })
         .then(function (answer) {
 
             connection.query("SELECT * FROM employee", function (err, data) {
-                console.log(data);
+                console.table(data);
                 runSearch();
 
             });
         });
 }
 
-// // "update" functions
-// function updateEmployeeRole() {
-//     inquirer
-//         .prompt([
-//             {
-//             name: "choice",
-//             type: "rawlist",
-//             choices: function () {
-//                 var choicesArray = [];
-//                 for (let i = 0; i < array.length; i++) {
-//                     choiceArray.push(results[i].item_name);
+// "update" functions
+function updateEmployeeRole() {
 
-//                 }
-//                 return choiceArray;
-//             },
-//             message: " Which Employee 's role would you like to update?"
-//              },
-//             {
-//                 name: "role",
-//                 type: "input",
-//                 message: "what is the new role?"
-//             }
-        
-        
-//         ])
-//         .then(function (answer) {
-//             var query = "UPDATE employee SET ? WHERE ?";
-//             connection.query(query,
-//                 [
-//                     {
-//                         role: answer.role
-//                     },
-//                     {
-//                         id: chosenItem.id
-//                     }
-//                 ], function (error) {
-//                     if (error) throw err;
-//                     console.log("Role of this employee is updated successfully!");
+    connection.query("SELECT * FROM employee", function (err, results) {
 
-//                     runSearch();
-//                 });
-//         });
-// }
+        // if(err) throw err;
+        
+        inquirer
+            .prompt([
+                {
+                    name: "choice",
+                    type: "rawlist",
+                    choices: function () {
+                        var choicesArray = [];
+                        for (let i = 0; i < results.length; i++) {
+                            choicesArray.push(results[i].firstname);
+
+                        }
+                        return choicesArray;
+                    },
+                    message: " Which Employee 's role would you like to update?"
+                },
+                {
+                    name: "role",
+                    type: "input",
+                    message: "what is the new role?"
+                }
+
+
+            ])
+            .then(function (answer) {
+
+                var chosenItem;
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].firstname === answer.choice) {
+                        chosenItem = results[i];
+                    }
+                }
+                var query = "UPDATE employee SET ? WHERE ?";
+                connection.query(query,
+                    [
+                        {
+                            role: answer.role
+                        },
+                        {
+                            id: chosenItem.id
+                        }
+                    ], function (error) {
+                        // if (error) throw err;
+                        console.log("Role of this employee is updated successfully!");
+
+                        runSearch();
+                    });
+            });
+    })
+}
