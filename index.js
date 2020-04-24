@@ -37,7 +37,7 @@ function runSearch() {
             choices: [
                 "*view All Employees",
                 "view All Employees By Department",
-                "view All Employees By Manager",
+                "*view All Employees By Manager",
                 "*Add Employee",
                 "Remove Employee",
                 "*Update Employee Role",
@@ -75,6 +75,9 @@ function runSearch() {
             else if (answer.action === "*Update Employee Role") {
                 updateEmployeeRole();
             }
+            else if (answer.action === "*view All Employees By Manager"){
+                viewAllEmplByManager();
+            }
             else if (answer.action === "*Exit") {
                 console.log("End!");
                 connection.end();
@@ -83,6 +86,34 @@ function runSearch() {
         });
 }
 
+function viewAllEmplByManager(){
+    connection.query("SELECT * FROM employee",function(err,data){
+        if(err) throw err;
+        let managers= data.map(function(res){
+            return{
+                name:`${res.firstname} ${res.lastname}`,
+                // use value to grab id
+                value:res.id
+            }
+        })
+        inquirer.prompt([{
+            
+                name: "managerid",
+                type: "rawlist",
+                choices: managers,
+    
+                message: "Select a manager to see their employees",
+            
+        }]).then(function(results){
+            connection.query("SELECT * FROM employee WHERE ?",
+            {managerid:results.managerid},
+            function (err, data) {
+
+                console.table(data);
+            })
+        })
+    })
+}
 
 
 // "add" functions
@@ -160,8 +191,18 @@ function addRole() {
 }
 
 
-
 function addEmployee() {
+
+connection.query("SELECT * FROM employee",function(err,data){
+    if(err) throw err;
+    let managers= data.map(function(res){
+        return{
+            name:`${res.firstname} ${res.lastname}`,
+            value:res.id
+        }
+    })
+
+    
     inquirer
         .prompt([{
             name: "employeeFN",
@@ -176,18 +217,21 @@ function addEmployee() {
         {
             name: "roleid",
             type: "number",
+
             message: "Enter the Employee role ID number",
         },
         {
             name: "managerid",
-            type: "number",
+            type: "rawlist",
+            choices: managers,
+
             message: "Enter the Employee manager ID number",
         }
         ])
         .then(function (newEmpl) {
 
-            var query = "INSERT INTO employee SET ?";
-            connection.query(query,
+            // var query = "INSERT INTO employee SET ?";
+            connection.query("INSERT INTO employee SET ?",
                 {
                     firstname: newEmpl.employeeFN,
                     lastname: newEmpl.employeeLN,
@@ -202,6 +246,7 @@ function addEmployee() {
                     runSearch();
                 });
         });
+    })
 }
 
 // "view all" functions
