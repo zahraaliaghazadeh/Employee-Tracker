@@ -42,8 +42,6 @@ After installations, Once you download the files, You can open the terminal and 
 
 To-do list:
 
-* fix the update employee role function.
-
 * Improvement to be done : This application can be furthur improved by using the join methods on tables and the rest of the non starred options in the choices in terminal.
 
 

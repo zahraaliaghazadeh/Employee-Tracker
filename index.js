@@ -321,7 +321,6 @@ function updateEmployeeRole() {
                         var choicesArray = [];
                         for (let i = 0; i < results.length; i++) {
                             choicesArray.push(results[i].firstname);
-
                         }
                         return choicesArray;
                     },
@@ -332,11 +331,10 @@ function updateEmployeeRole() {
                     type: "input",
                     message: "what is the new role?"
                 }
-
-
             ])
             .then(function (answer) {
-
+               console.log(answer);
+               console.log(results);
                 var chosenItem;
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].firstname === answer.choice) {
@@ -347,7 +345,7 @@ function updateEmployeeRole() {
                 connection.query(query,
                     [
                         {
-                            role: answer.role
+                            roleid: answer.role
                         },
                         {
                             id: chosenItem.id
