@@ -36,7 +36,7 @@ function runSearch() {
             // the * labeled ones are the minimum requirement
             choices: [
                 "*view All Employees",
-                "view All Employees By Department",
+                "*view All Employees By Department",
                 "*view All Employees By Manager",
                 "*Add Employee",
                 "Remove Employee",
@@ -75,8 +75,11 @@ function runSearch() {
             else if (answer.action === "*Update Employee Role") {
                 updateEmployeeRole();
             }
-            else if (answer.action === "*view All Employees By Manager"){
+            else if (answer.action === "*view All Employees By Manager") {
                 viewAllEmplByManager();
+            }
+            else if (answer.action === "*view All Employees By Department") {
+                viewAllEmplByDept();
             }
             else if (answer.action === "*Exit") {
                 console.log("End!");
@@ -86,34 +89,118 @@ function runSearch() {
         });
 }
 
-function viewAllEmplByManager(){
-    connection.query("SELECT * FROM employee",function(err,data){
-        if(err) throw err;
-        let managers= data.map(function(res){
-            return{
-                name:`${res.firstname} ${res.lastname}`,
+function viewAllEmplByManager() {
+    connection.query("SELECT * FROM employee", function (err, data) {
+        if (err) throw err;
+        let managers = data.map(function (res) {
+            return {
+                name: `${res.firstname} ${res.lastname}`,
                 // use value to grab id
-                value:res.id
+                value: res.id
             }
         })
         inquirer.prompt([{
-            
-                name: "managerid",
-                type: "rawlist",
-                choices: managers,
-    
-                message: "Select a manager to see their employees",
-            
-        }]).then(function(results){
-            connection.query("SELECT * FROM employee WHERE ?",
-            {managerid:results.managerid},
-            function (err, data) {
 
-                console.table(data);
-            })
+            name: "managerid",
+            type: "rawlist",
+            choices: managers,
+
+            message: "Select a manager to see their employees",
+
+        }]).then(function (results) {
+            connection.query("SELECT * FROM employee WHERE ?",
+                { managerid: results.managerid },
+                function (err, data) {
+
+                    console.table(data);
+                })
         })
     })
 }
+
+
+
+// select employee id, fN and LN and the title from the employee table then left join role on employee.id is equal to role.id
+// left join department one role. departmentid = department id
+// then department.id is the department id 
+
+
+// to use the join method for view by dept
+// SELECT * FROM employee;
+// SELECT * FROM employee JOIN role ON (employee.roleid = role.id) JOIN department ON (role.departmentid = department.id) WHERE department.id=5;
+
+
+function viewAllEmplByDept() {
+    query = " SELECT * FROM employee JOIN role ON (employee.roleid = role.id) JOIN department ON (role.departmentid = department.id) WHERE department.id=5;"
+
+    connection.query("SELECT * FROM department", function (err, data) {
+        if (err) throw err;
+        let department = data.map(function (res) {
+            return {
+                name: res.name,
+                // use value to grab id
+                value: res.id
+            }
+        })
+        inquirer.prompt([{
+
+            name: "departmentid",
+            type: "rawlist",
+            choices: department,
+
+            message: "Select a department to view all the employees",
+
+        }]).then(function (results) {
+            connection.query(query, function (err, data) {
+                    console.log(data);
+                })
+        })
+    })
+
+
+}
+
+
+
+// function viewAllEmplByDept() {
+//     connection.query("SELECT * FROM department", function (err, data) {
+//         if (err) throw err;
+//         let department = data.map(function (res) {
+//             return {
+//                 name: res.name,
+//                 // use value to grab id
+//                 value: res.id
+//             }
+//         })
+//         inquirer.prompt([{
+
+//             name: "departmentid",
+//             type: "rawlist",
+//             choices: department,
+
+//             message: "Select a department to view all the employees",
+
+//         }]).then(function (results) {
+//             connection.query("SELECT * FROM role WHERE ?",
+//                 { departmentid: results.departmentid },
+//                 function (err, data) {
+//                     for (var i = 0; i < data.length; i++) {
+//                         connection.query("SELECT * FROM employee WHERE ?",
+//                             { roleid: data[i].id },
+//                             function (err, empldata) {
+
+//                                 console.table(empldata);
+//                             })
+//                     }
+//                     console.log(data);
+//                 })
+//         })
+//     })
+
+
+// }
+
+
 
 
 // "add" functions
@@ -193,59 +280,59 @@ function addRole() {
 
 function addEmployee() {
 
-connection.query("SELECT * FROM employee",function(err,data){
-    if(err) throw err;
-    let managers= data.map(function(res){
-        return{
-            name:`${res.firstname} ${res.lastname}`,
-            value:res.id
-        }
-    })
+    connection.query("SELECT * FROM employee", function (err, data) {
+        if (err) throw err;
+        let managers = data.map(function (res) {
+            return {
+                name: `${res.firstname} ${res.lastname}`,
+                value: res.id
+            }
+        })
 
-    
-    inquirer
-        .prompt([{
-            name: "employeeFN",
-            type: "input",
-            message: "Enter the Employee first name",
-        },
-        {
-            name: "employeeLN",
-            type: "input",
-            message: "Enter the Employee last name",
-        },
-        {
-            name: "roleid",
-            type: "number",
 
-            message: "Enter the Employee role ID number",
-        },
-        {
-            name: "managerid",
-            type: "rawlist",
-            choices: managers,
+        inquirer
+            .prompt([{
+                name: "employeeFN",
+                type: "input",
+                message: "Enter the Employee first name",
+            },
+            {
+                name: "employeeLN",
+                type: "input",
+                message: "Enter the Employee last name",
+            },
+            {
+                name: "roleid",
+                type: "number",
 
-            message: "Enter the Employee manager ID number",
-        }
-        ])
-        .then(function (newEmpl) {
+                message: "Enter the Employee role ID number",
+            },
+            {
+                name: "managerid",
+                type: "rawlist",
+                choices: managers,
 
-            // var query = "INSERT INTO employee SET ?";
-            connection.query("INSERT INTO employee SET ?",
-                {
-                    firstname: newEmpl.employeeFN,
-                    lastname: newEmpl.employeeLN,
-                    roleid: newEmpl.roleid,
-                    managerid: newEmpl.managerid,
+                message: "Enter the Employee manager ID number",
+            }
+            ])
+            .then(function (newEmpl) {
 
-                }, function (err, data) {
-                    connection.query("SELECT * FROM employee", function (err, data) {
+                // var query = "INSERT INTO employee SET ?";
+                connection.query("INSERT INTO employee SET ?",
+                    {
+                        firstname: newEmpl.employeeFN,
+                        lastname: newEmpl.employeeLN,
+                        roleid: newEmpl.roleid,
+                        managerid: newEmpl.managerid,
 
-                        console.table(data);
-                    })
-                    runSearch();
-                });
-        });
+                    }, function (err, data) {
+                        connection.query("SELECT * FROM employee", function (err, data) {
+
+                            console.table(data);
+                        })
+                        runSearch();
+                    });
+            });
     })
 }
 
@@ -311,7 +398,7 @@ function updateEmployeeRole() {
     connection.query("SELECT * FROM employee", function (err, results) {
 
         // if(err) throw err;
-        
+
         inquirer
             .prompt([
                 {
@@ -333,8 +420,8 @@ function updateEmployeeRole() {
                 }
             ])
             .then(function (answer) {
-               console.log(answer);
-               console.log(results);
+                console.log(answer);
+                console.log(results);
                 var chosenItem;
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].firstname === answer.choice) {
